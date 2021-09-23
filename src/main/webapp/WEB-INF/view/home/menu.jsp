@@ -43,11 +43,20 @@
 <script>
 	var header = document.getElementById("nav");
 	var links = header.getElementsByClassName("menu_link");
+	var currentLocation = location.href;
 	
-	for (var i = 0; i < links.length; i++) {		
+	for (var i = 0; i < links.length; i++) {
+		if (links[i].heref == currentLocation ||
+		   	('http://localhost:8080/stock-control-jspXservlet/' == currentLocation &&
+		   	  links[i] == 'http://localhost:8080/stock-control-jspXservlet/HomeController')
+		   ) links[i].className += " active";		
+		
+		
 		links[i].addEventListener("click", function() {
 			var current = document.getElementsByClassName("active");
 			current[0].className = current[0].className.replace(" active", "")
+			
+			this.className.replace(" active", "")
 			this.className += " active";
 		});
 	}
