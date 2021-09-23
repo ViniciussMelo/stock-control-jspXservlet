@@ -1,7 +1,6 @@
 package service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,46 +18,91 @@ public class ProductService {
 		Double price = Double.parseDouble(req.getParameter("price"));
 		
 		Product product = new Product(barcode, name, price);
-		setProductInSession(req, product);
+		addProductInSession(req, product);
 	}
 	
-	private void setProductInSession(HttpServletRequest req, Product product) {
-		int count = getCountProduct(req);
-		req.getSession().setAttribute(PRODUCT + count, product);
-		setCountProduct(req);
-	}
-	
-	private int getCountProduct(HttpServletRequest req) {
-		int count = 0;
-		try {
-		count = (int)req.getSession().getAttribute(PRODUCT_COUNT);
-		} catch (Exception ex) {
-			System.out.println("Session for " + PRODUCT_COUNT + " is null");
+	private void addProductInSession(HttpServletRequest req, Product product) {			 
+		ArrayList<Product> products = getSessionProducts(req);
+		boolean prodAlreadyExists = productAlreayExists(req, product);
+		
+		if (prodAlreadyExists) {
+			products = updateProductList(req, product);
+		} else {
+			products.add(product);
 		}
-		return count;
+		
+		setProductsSession(req, products);
 	}
 	
-	private void setCountProduct(HttpServletRequest req) {
-		int count = getCountProduct(req);
-		req.getSession().setAttribute(PRODUCT_COUNT, count + 1);
+	private void setProductsSession(HttpServletRequest req, ArrayList<Product> products) {
+		req.getSession().setAttribute(PRODUCT, products);
+	}
+	
+	private ArrayList<Product> getSessionProducts(HttpServletRequest req) {
+		ArrayList<Product> prod = (ArrayList<Product>) req.getSession().getAttribute(PRODUCT);
+		
+		if (prod == null) prod = new ArrayList<Product>();
+		
+		return prod;
 	}
 	
 	public List<Product> getAllProducts(HttpServletRequest req) {
-		List<Product> listProducts = new ArrayList<Product>();
-		
-		int countProduct = getCountProduct(req);
-		
-		for (int i = 0; i < countProduct; i++) {
-			Product prod = getProductByPosition(req, i);
-			listProducts.add(prod);
-		}
+		List<Product> listProducts = getSessionProducts(req);
 		
 		return listProducts;
 	}
 	
-	private Product getProductByPosition(HttpServletRequest req, int position) {
-		Product prod = (Product)req.getSession().getAttribute(PRODUCT + position);
+	public void editProduct(HttpServletRequest req) {
+		Product prod = getProductByBarcode(req, req.getParameter("barcode"));
 		
-		return prod;
+		prod.setName(req.getParameter("name"));
+		prod.setPrice(Double.parseDouble(req.getParameter("price")));
+		
+		addProductInSession(req, prod);
+	}
+	
+	public void deleteProduct(HttpServletRequest req) {
+		ArrayList<Product> products = getSessionProducts(req);
+		products.removeIf(p -> p.getBarcode().equalsIgnoreCase(req.getParameter("barcode")));
+		
+		setProductsSession(req, products);
+	}
+	
+	private boolean productAlreayExists(HttpServletRequest req, Product product) {
+		ArrayList<Product> prods = getSessionProducts(req);
+		
+		for(Product prod : prods) {
+		    if(prod != null && prod.getBarcode().equalsIgnoreCase(product.getBarcode())) {
+		        return true;
+		    }
+		}
+		
+		return false;
+	}
+	
+	private ArrayList<Product> updateProductList(HttpServletRequest req, Product product) {
+		ArrayList<Product> prods = getSessionProducts(req);
+		
+		for(Product prod : prods) {
+		    if(prod != null && prod.getBarcode().equalsIgnoreCase(product.getBarcode())) {
+		        prod.setBarcode(product.getBarcode());
+		        prod.setName(product.getName());
+		        prod.setPrice(product.getPrice());
+		    }
+		}
+		
+		return prods;
+	}
+	
+	public Product getProductByBarcode(HttpServletRequest req, String barcode) {		
+		ArrayList<Product> prods = getSessionProducts(req);
+		
+		for(Product prod : prods) {
+		    if(prod != null && prod.getBarcode().equalsIgnoreCase(barcode)) {
+		        return prod;
+		    }
+		}
+		
+		return null;
 	}
 }

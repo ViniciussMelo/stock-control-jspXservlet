@@ -4,13 +4,11 @@ public class Product {
 	private String barcode;
 	private String name;
 	private double price;
-	private boolean active;
 	
 	public Product(String barcode, String name, double price) {
 		this.barcode = barcode;
 		this.name = name;
 		this.price = price;
-		this.active = true;
 	}
 	
 	public String getBarcode() {
@@ -35,14 +33,5 @@ public class Product {
 
 	public void setPrice(double price) {
 		this.price = price;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	
+	}	
 }
