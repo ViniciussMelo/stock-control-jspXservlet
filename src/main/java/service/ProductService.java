@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
 
 public class ProductService {
-	
-	private final String PRODUCT_COUNT = "PRODUCT_COUNT";
 	private final String PRODUCT = "PRODUCT";
 	
-	public void insertProduct(HttpServletRequest req, HttpServletResponse resp) {
+	public void insertProduct(HttpServletRequest req) {
 		String barcode = req.getParameter("barcode");
 		String name = req.getParameter("name");
 		Double price = Double.parseDouble(req.getParameter("price"));
@@ -21,7 +18,7 @@ public class ProductService {
 		addProductInSession(req, product);
 	}
 	
-	private void addProductInSession(HttpServletRequest req, Product product) {			 
+	private void addProductInSession(HttpServletRequest req, Product product) {
 		ArrayList<Product> products = getSessionProducts(req);
 		boolean prodAlreadyExists = productAlreayExists(req, product);
 		

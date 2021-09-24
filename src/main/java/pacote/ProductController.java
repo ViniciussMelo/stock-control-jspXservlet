@@ -35,7 +35,7 @@ public class ProductController extends HttpServlet{
 	        	}
 	        }
 	         else {
-        		productService.insertProduct(req, resp);
+        		productService.insertProduct(req);
         	}
 
 	        setProdActive(req);
@@ -50,7 +50,7 @@ public class ProductController extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-	        String forward="";
+	        String forward = "";
 	        String action = req.getParameter("action");
 	        
 	        if(action != null) {
