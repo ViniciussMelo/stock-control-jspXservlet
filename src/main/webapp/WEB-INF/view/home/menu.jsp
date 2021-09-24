@@ -38,6 +38,7 @@
 	<a class="menu_link${HOME}" href="<%=request.getContextPath()%>/HomeController">Home</a>
 	<a class="menu_link${PROD}" href="<%=request.getContextPath()%>/ProductController">Products</a>
 	<a class="menu_link${MOV}" href="<%=request.getContextPath()%>/MovementController">Movements</a>
+	<a class="menu_link${MOVPROD}" href="<%=request.getContextPath()%>/ProductsAndMovementsController">All</a>
 </div>
 
 <script>
