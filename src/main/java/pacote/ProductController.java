@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
 import service.ProductService;
-import service.ProductServiceV2;
 import util.DBUtil;
 
 @WebServlet(name="productController", urlPatterns = {"/ProductController"})
@@ -37,7 +36,7 @@ public class ProductController extends HttpServlet{
 		    		
 		    		Product product = new Product(barcode, name, price);
 		    		
-	        		ProductServiceV2.updateProduct(conn, product);
+	        		ProductService.updateProduct(conn, product);
 	        	}
 	        }
 	         else {
@@ -47,12 +46,12 @@ public class ProductController extends HttpServlet{
 	    		
 	    		Product product = new Product(barcode, name, price);
 	    		
-        		ProductServiceV2.insertProduct(conn, product);
+        		ProductService.insertProduct(conn, product);
         	}
 
 	        setProdActive(req);
 			RequestDispatcher view = req.getRequestDispatcher(LIST_PRODUCT);
-			req.setAttribute("products", ProductServiceV2.getAllProducts(conn));
+			req.setAttribute("products", ProductService.getAllProducts(conn));
 			view.forward(req, resp);
 		} catch (Exception ex) {
 			System.out.println("Post product: " + ex.getMessage());
@@ -74,16 +73,16 @@ public class ProductController extends HttpServlet{
 	        		int barcode = Integer.parseInt(req.getParameter("barcode"));
 	        		forward = EDIT_PRODUCT;
 	        		
-	        		req.setAttribute("prod", ProductServiceV2.getProductByBarcode(conn, barcode));
+	        		req.setAttribute("prod", ProductService.getProductByBarcode(conn, barcode));
 	        	} else if (action.equalsIgnoreCase("deleteProduct")) {
 	        		int barcode = Integer.parseInt(req.getParameter("barcode"));
 	        		
 	        		forward = LIST_PRODUCT;
-	        		ProductServiceV2.deleteProductByBarcode(conn, barcode);
-					req.setAttribute("products", ProductServiceV2.getAllProducts(conn));
+	        		ProductService.deleteProductByBarcode(conn, barcode);
+					req.setAttribute("products", ProductService.getAllProducts(conn));
 	        	}
 	        } else {
-	        	List<Product> prods = ProductServiceV2.getAllProducts(conn);
+	        	List<Product> prods = ProductService.getAllProducts(conn);
 				req.setAttribute("products", prods);
 				forward = LIST_PRODUCT;
 			}

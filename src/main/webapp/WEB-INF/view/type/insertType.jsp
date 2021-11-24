@@ -1,6 +1,5 @@
 <%@page import ="java.util.List"%>
 <%@page import ="model.Product"%>
-<%@page import ="model.Type"%>
 <style>
 	#main {
 		position: absolute;
@@ -120,55 +119,13 @@
      }
 </style>
 <div id="main">
-	<form action="MovementController" method="POST">
+	<form action="TypeController" method="POST">
 		<div class="container">
-			<h3>Movement</h3>
-			<label><b>Product</b></label>
-	   		<br>
-	   		<select name="productId">
-	   		<%
-	   			List<Product> products = (List) request.getAttribute("products");
-	   			if (products != null) {
-	   				for (Product prod : products) {
-	   		%>
-	   			<option value="<%=prod.getBarcode()%>"><%=prod.getName()%></option>
-	   		<%
-	   				}
-	   			}
-	   		%>
-			</select>
-			<br>
-			<br>
-			<label><b>Type</b></label>
-			<br>
-			<select name="typeId">
-	   		<%
-	   			List<Type> types = (List) request.getAttribute("types");
-	   			if (types != null) {
-	   				for (Type type : types) {
-	   		%>
-	   			<option value="<%=type.getId()%>"><%=type.getDescription()%></option>
-	   		<%
-	   				}
-	   			}
-	   		%>
-			</select>
-			<br>
-			<br>
-			<label><b>Quantity</b></label>
-	   		<input type="number" onkeypress="return onlyNumberKey(event)" placeholder="Enter quantity" name="quantity" id="quantity" required>
+			<h3>Type</h3>
+			<label><b>Description</b></label>
+	   		<input type="text" placeholder="Enter description" name="description" id="description" required>
 			<br>
 			<button type="submit" class="registerbtn">Register</button>
 		</div>
 	</form>
 </div>
-<script>
-	function onlyNumberKey(evt) {
-	    
-	    // Only ASCII character in that range allowed
-	    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
-	    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-	        return false;
-	    return true;
-	}
-</script>

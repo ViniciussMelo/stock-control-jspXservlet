@@ -1,6 +1,7 @@
 <%@page import ="java.util.List"%>
 <%@page import ="model.Movement"%>
 <%@page import ="model.Product"%>
+<%@page import ="model.Type"%>
 <style>
 	#main {
 		position: absolute;
@@ -140,7 +141,7 @@
 				<td><%=j++%></td>
 				<td><%=mov.getProductName()%></td>
 				<td><%=mov.getQuantity()%></td>
-				<td><%=mov.getType()%></td>
+				<td><%=mov.getTypeName()%></td>
 			</tr>
 			<% 
 					}
@@ -153,5 +154,41 @@
             	<td><%=movements.size()%></td>
 	      	</tr>
 	      </tfoot>
-	  </table>
+	</table>
+	<br>
+	<h3>Types</h3>
+	<table id="movements" border="1">
+		<thead>
+	    	<tr>
+	        	<th>Row</th>
+	            <th>Id</th>
+	            <th>Description</th>
+	        </tr>
+		</thead>
+	    <tbody>
+	 		<%
+				int k = 1;
+			    List<Type> types = (List) request.getAttribute("types");
+			%>
+			<%
+				if (movements != null) {
+					for (Type type : types) {
+			%>
+			<tr>
+				<td><%=k++%></td>
+				<td><%=type.getId()%></td>
+				<td><%=type.getDescription()%></td>
+			</tr>
+			<% 
+					}
+				}
+			%>
+	      </tbody>
+	      <tfoot>
+	      	<tr>
+	      		<th scope="rowgroup" colspan="2">Records</th>
+            	<td><%=types.size()%></td>
+	      	</tr>
+	      </tfoot>
+	</table>
 </div>

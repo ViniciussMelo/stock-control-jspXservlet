@@ -13,22 +13,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Movement;
-import service.MovementServiceV2;
+import service.MovementService;
 import service.ProductService;
-import service.ProductServiceV2;
+import service.TypeService;
 
 @WebServlet(name="MovementController", urlPatterns = {"/MovementController"})
 public class MovementController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ProductService productService;
 	
 	private String LIST_MOVEMENT = "/WEB-INF/view/movement/movement.jsp";
 	private String INSERT_MOVEMENT = "/WEB-INF/view/movement/movement_new.jsp";
 	private String EDIT_MOVEMENT = "/WEB-INF/view/movement/movement_edit.jsp";
-	
-	public MovementController() {
-		productService = new ProductService();
-	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,21 +33,28 @@ public class MovementController extends HttpServlet {
 			
 			if(action == null) {
 				int productId = Integer.parseInt(req.getParameter("productId"));
-				String type = req.getParameter("type");
+				int typeId = Integer.parseInt(req.getParameter("typeId"));
 				int quantity = Integer.parseInt(req.getParameter("quantity"));
 				
-				//Movement movement = new Movement(productId, type, quantity);	
+				Movement movement = new Movement(productId, typeId, quantity);
 				
-				//MovementServiceV2.insertMovement(conn, movement);
+				MovementService.insertMovement(conn, movement);
 			} else {
 				if (action.equalsIgnoreCase("saveMovement")) {
-	        		//movementService.editMovement(req);
+					int id = Integer.parseInt(req.getParameter("id"));
+					int productId = Integer.parseInt(req.getParameter("productId"));
+					int typeId = Integer.parseInt(req.getParameter("typeId"));
+					int quantity = Integer.parseInt(req.getParameter("quantity"));
+					
+					Movement movement = new Movement(id, productId, typeId, quantity);
+					
+	        		MovementService.updateMovement(conn, movement);
 	        	}
 			}
 			
 	        setMovActive(req);
 			RequestDispatcher view = req.getRequestDispatcher(LIST_MOVEMENT);
-			req.setAttribute("movements", MovementServiceV2.getAllMovements(conn));
+			req.setAttribute("movements", MovementService.getAllMovements(conn));
 			view.forward(req, resp);
 		} catch (Exception ex) {
 			System.out.println("Post movement: " + ex.getMessage());
@@ -67,18 +69,17 @@ public class MovementController extends HttpServlet {
         	Connection conn = DBUtil.getConnection();
 			
 	        if(action == null) {
-	        	List<Movement> aaa = MovementServiceV2.getAllMovements(conn);
-	        	
-				req.setAttribute("movements", aaa);
+				req.setAttribute("movements", MovementService.getAllMovements(conn));
 				forward = LIST_MOVEMENT;	        	
 	        } else {
 	        	if (action.equalsIgnoreCase("insertMovement")) {
 					forward = INSERT_MOVEMENT;
-					req.setAttribute("products", ProductServiceV2.getAllProducts(conn));
+					req.setAttribute("products", ProductService.getAllProducts(conn));
+					req.setAttribute("types", TypeService.getAllTypes(conn));
 				}
 	        	else if (action.equalsIgnoreCase("editMovement")) {
 	        		int id = Integer.parseInt(req.getParameter("id"));
-	        		Movement mov = MovementServiceV2.getMovementById(conn, id);
+	        		Movement mov = MovementService.getMovementById(conn, id);
 	        		
 					req.setAttribute("mov", mov);
 	        		forward = EDIT_MOVEMENT;
@@ -87,8 +88,8 @@ public class MovementController extends HttpServlet {
 	        		
 	        		forward = LIST_MOVEMENT;
 	        		
-	        		MovementServiceV2.deleteMovementById(conn, id);
-	        		req.setAttribute("movements", MovementServiceV2.getAllMovements(conn));
+	        		MovementService.deleteMovementById(conn, id);
+	        		req.setAttribute("movements", MovementService.getAllMovements(conn));
 	        	}
 	        }
 	        

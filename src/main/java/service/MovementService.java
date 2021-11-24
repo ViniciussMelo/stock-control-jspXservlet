@@ -1,123 +1,157 @@
 package service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
 import model.Movement;
 
 public class MovementService {
-	/*private final String MOVEMENT = "MOVEMENT";
+	private final static String TABLE_NAME = "movements";
+	private final static String PRODUCT_TABLE_NAME = "products";
+	private final static String TYPE_TABLE_NAME = "types";
 	
-	public void insertMovement(HttpServletRequest req) {
-		String productName = req.getParameter("productName");
-		String type = req.getParameter("type");
-		int quantity = Integer.parseInt(req.getParameter("quantity"));
-		int id = getNextId(req);
-		
-		Movement movement = new Movement(id, productName, type, quantity);	
-		addMovementInSession(req, movement);
-	}
+	public final static String MOVEMENT_ID_COLUMN = "id";
+	public final static String MOVEMENT_QUANTITY_COLUMN = "quantity";
+	public final static String MOVEMENT_PRODUCT_ID_COLUMN = "product_id";
+	public final static String MOVEMENT_TYPE_ID_COLUMN = "type_id";
 	
-	private void addMovementInSession(HttpServletRequest req, Movement movement) {
-		ArrayList<Movement> movements = getSessionMovements(req);
-		boolean movementAlreadyExists = movementAlreadyExists(req, movement);
-		
-		if (movementAlreadyExists) {
-			movements = updateMovementList(req, movement);
-		} else {
-			movements.add(movement);
-		}
-		
-		setMovementInSession(req, movements);
-	}
+	public final static String PRODUCT_BARCODE_COLUMN = "barcode";
+	public final static String PRODUCT_NAME_COLUMN = "name";
 	
-	private void setMovementInSession(HttpServletRequest req, ArrayList<Movement> movements) {
-		req.getSession().setAttribute(MOVEMENT, movements);
-	}
+	public final static String TYPE_ID_COLUMN = "id";
+	public final static String TYPE_DESCRIPTION_COLUMN = "description";
 	
-	private int getNextId(HttpServletRequest req) {
-		int id = getMovementsCount(req);
-		
-		return id + 1;
-	}
-	
-	private int getMovementsCount(HttpServletRequest req) {
-		ArrayList<Movement> movements = (ArrayList<Movement>) req.getSession().getAttribute(MOVEMENT);
-		
-		if (movements != null) return movements.size();
-		
-		return 0;
-	}
-	
-	public List<Movement> getAllMovements(HttpServletRequest req) {
-		List<Movement> listMovements = getSessionMovements(req);
-		
-		return listMovements;
-	}
-	
-	private ArrayList<Movement> getSessionMovements(HttpServletRequest req) {
-		ArrayList<Movement> movements = (ArrayList<Movement>) req.getSession().getAttribute(MOVEMENT);
+	public static Movement getMovementById(Connection conn, int id) {
+		try {
+			String sql = "select "+ TABLE_NAME+ "." + MOVEMENT_ID_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_TYPE_ID_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_QUANTITY_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_PRODUCT_ID_COLUMN + ","
+					+ "			 "+ PRODUCT_TABLE_NAME+ "." + PRODUCT_NAME_COLUMN + " as prodName,"
+					+ "			 "+ TYPE_TABLE_NAME+ "." + TYPE_DESCRIPTION_COLUMN + " as typeDesc"
+					+ "	    from " + TABLE_NAME
+					+ "	  	join " + PRODUCT_TABLE_NAME +" on "
+					+ "     " + PRODUCT_TABLE_NAME + "." + PRODUCT_BARCODE_COLUMN + " = " + TABLE_NAME + "." + MOVEMENT_PRODUCT_ID_COLUMN
+					+ "	  	join " + TYPE_TABLE_NAME +" on "
+					+ "     " + TYPE_TABLE_NAME + "." + TYPE_ID_COLUMN + " = " + TABLE_NAME + "." + MOVEMENT_TYPE_ID_COLUMN
+					+ "    where " + TABLE_NAME + "." + MOVEMENT_ID_COLUMN + " = ?"
+					+ "   order by " + TABLE_NAME + "." + MOVEMENT_ID_COLUMN;
 			
-		if (movements == null) movements = new ArrayList<Movement>();
-		
-		return movements;
-	}
-	
-	private boolean movementAlreadyExists(HttpServletRequest req, Movement movement) {
-		ArrayList<Movement> movements = getSessionMovements(req);
-		
-		for(Movement mov : movements) {
-			if(mov != null && mov.getId() == movement.getId()) {
-		        return true;
-		    }
-		}
-		
-		return false;
-	}
-	
-	private ArrayList<Movement> updateMovementList(HttpServletRequest req, Movement movement) {
-		ArrayList<Movement> movements = getSessionMovements(req);
-		
-		for(Movement mov : movements) {
-			if(mov != null && mov.getId() == movement.getId()) {
-		        mov.setProductName(movement.getProductName());
-		        mov.setQuantity(movement.getQuantity());
-		        mov.setType(movement.getType());
-		    }
-		}
-		
-		return movements;
-	}
-	
-	public Movement getMovementById(HttpServletRequest req, int id) {
-ArrayList<Movement> movements = getSessionMovements(req);
-		
-		for(Movement mov : movements) {
-			if(mov != null && mov.getId() == id) {
+			PreparedStatement stm = conn.prepareStatement(sql);
+			stm.setInt(1, id);
+			
+			ResultSet rs = stm.executeQuery();
+			
+			if (rs.next()) {
+				int movId = rs.getInt(MOVEMENT_ID_COLUMN);
+				int movQuantity = rs.getInt(MOVEMENT_QUANTITY_COLUMN);
+				
+				String prodName = rs.getString("prodName");
+				int productId = rs.getInt(MOVEMENT_PRODUCT_ID_COLUMN);
+				
+				int typeId = rs.getInt(MOVEMENT_TYPE_ID_COLUMN);
+				String typeDesc = rs.getString("typeDesc");
+				
+				Movement mov = new Movement(movId, productId, typeId, movQuantity, prodName, typeDesc);
+				
 				return mov;
-		    }			
+			}
+		} catch (Exception ex) {
+			System.out.println("Error when getMovementById: " + ex.getMessage());
 		}
 		
 		return null;
 	}
 	
-	public void editMovement(HttpServletRequest req) {
-		int id = Integer.parseInt(req.getParameter("id"));
-		Movement movement = getMovementById(req, id);
+	public static ArrayList<Movement> getAllMovements(Connection conn) {
+		ArrayList<Movement> movements = new ArrayList<Movement>();
+		try {			
+			String sql = "select "+ TABLE_NAME+ "." + MOVEMENT_ID_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_TYPE_ID_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_QUANTITY_COLUMN + ","
+					+ "			 "+ TABLE_NAME+ "." + MOVEMENT_PRODUCT_ID_COLUMN + ","
+					+ "			 "+ PRODUCT_TABLE_NAME+ "." + PRODUCT_NAME_COLUMN + " as prodName,"
+					+ "			 "+ TYPE_TABLE_NAME+ "." + TYPE_DESCRIPTION_COLUMN + " as typeDesc"
+					+ "	    from " + TABLE_NAME
+					+ "	  	join " + PRODUCT_TABLE_NAME +" on "
+					+ "     " + PRODUCT_TABLE_NAME + "." + PRODUCT_BARCODE_COLUMN + " = " + TABLE_NAME + "." + MOVEMENT_PRODUCT_ID_COLUMN
+					+ "	  	join " + TYPE_TABLE_NAME +" on "
+					+ "     " + TYPE_TABLE_NAME + "." + TYPE_ID_COLUMN + " = " + TABLE_NAME + "." + MOVEMENT_TYPE_ID_COLUMN
+					+ "   order by " + TABLE_NAME + "." + MOVEMENT_ID_COLUMN;
+			
+			PreparedStatement stm = conn.prepareStatement(sql);
+			
+			ResultSet rs = stm.executeQuery();
+			
+			while (rs.next()) {
+				int movId = rs.getInt(MOVEMENT_ID_COLUMN);
+				int movQuantity = rs.getInt(MOVEMENT_QUANTITY_COLUMN);
+				
+				String prodName = rs.getString("prodName");
+				int productId = rs.getInt(MOVEMENT_PRODUCT_ID_COLUMN);
+				
+				int typeId = rs.getInt(MOVEMENT_TYPE_ID_COLUMN);
+				String typeDesc = rs.getString("typeDesc");
+				
+				Movement mov = new Movement(movId, productId, typeId, movQuantity, prodName, typeDesc);
+				
+				movements.add(mov);
+			}
+		} catch (Exception ex) {
+			System.out.println("Error when getAllMovements: " + ex.getMessage());
+		}
 		
-		movement.setType(req.getParameter("type"));
-		movement.setQuantity(Integer.parseInt(req.getParameter("quantity")));
-		
-		addMovementInSession(req, movement);
+		return movements;
 	}
 	
-	public void deleteMovement(HttpServletRequest req) {
-		ArrayList<Movement> movements = getSessionMovements(req);
-		int id = Integer.parseInt(req.getParameter("id"));
-		movements.removeIf(m -> m.getId() == id);
+
+	public static void deleteMovementById(Connection conn, int id) {
+		try {
+			String sql = "delete from " + TABLE_NAME + " where " + MOVEMENT_ID_COLUMN +" = ?";
+			
+			PreparedStatement stm = conn.prepareStatement(sql);
+			stm.setInt(1, id);
+			
+			stm.execute();
+		} catch (Exception ex) {
+			System.out.println("Error when delete movement: " + ex.getMessage());
+		}
+	}
 		
-		setMovementInSession(req, movements);
-	}*/
+	public static void insertMovement(Connection conn, Movement mov) {
+		try {
+			String sql = "insert into " + TABLE_NAME + " ("+ MOVEMENT_TYPE_ID_COLUMN +","+ MOVEMENT_QUANTITY_COLUMN + "," + MOVEMENT_PRODUCT_ID_COLUMN + ")"
+					+ "        values (?, ?, ?)";
+			
+			PreparedStatement stm = conn.prepareStatement(sql);
+			stm.setInt(1, mov.getTypeId());
+			stm.setInt(2, mov.getQuantity());
+			stm.setInt(3, mov.getProductId());
+			
+			stm.execute();
+		} catch (Exception ex) {
+			System.out.println("Error when insertMovement: " + ex.getMessage());
+		}
+	}
+	
+	public static void updateMovement(Connection conn, Movement mov) throws SQLException {
+		try {
+			String sql = "update " + TABLE_NAME +
+					 "		 set " + MOVEMENT_TYPE_ID_COLUMN + " = ?, "
+					 + "         " + MOVEMENT_QUANTITY_COLUMN + " = ? "
+					 + "   where " + MOVEMENT_ID_COLUMN + " = ?";
+			
+			PreparedStatement stm = conn.prepareStatement(sql);
+			stm.setInt(1, mov.getTypeId());
+			stm.setInt(2, mov.getQuantity());
+			stm.setInt(3, mov.getId());
+			
+			stm.execute();
+		} catch (Exception ex) {
+			System.out.println("Error when updateMovement: " + ex.getMessage());
+		}
+	}
 }

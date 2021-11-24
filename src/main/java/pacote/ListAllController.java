@@ -10,31 +10,24 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.MovementService;
-import service.MovementServiceV2;
 import service.ProductService;
-import service.ProductServiceV2;
+import service.TypeService;
 import util.DBUtil;
 
-@WebServlet(name="productsAndMovementsController", urlPatterns = {"/ProductsAndMovementsController"})
-public class ProductsAndMovementsController  extends HttpServlet {
+@WebServlet(name="listAllController", urlPatterns = {"/ListAllController"})
+public class ListAllController  extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ProductService productService;
-	private MovementService movementService;
 	
 	private String LIST_ALL = "/WEB-INF/view/listAll/listAll.jsp";
-
-	public ProductsAndMovementsController() {
-		movementService = new MovementService();
-		productService = new ProductService();		
-	}
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
         	Connection conn = DBUtil.getConnection();
         	
-			req.setAttribute("movements", MovementServiceV2.getAllMovements(conn));
-			req.setAttribute("products", ProductServiceV2.getAllProducts(conn));
+			req.setAttribute("movements", MovementService.getAllMovements(conn));
+			req.setAttribute("products", ProductService.getAllProducts(conn));
+			req.setAttribute("types", TypeService.getAllTypes(conn));
 			req.setAttribute("MOVPROD", " active");
 			
 

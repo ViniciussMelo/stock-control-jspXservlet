@@ -135,16 +135,15 @@
 			<input type="number" id="inputReadonly" onkeypress="return onlyNumberKey(event)" placeholder="Enter id" name="id" value="${mov.id}" readonly="readonly">
 			<label><b>Product</b></label>
 	   		<br>
-	   		<select id="productName" name="productName" disabled="disabled">
-	   			<option value="${mov.productName}">${mov.productName}</option>
+	   		<select id="productId" name="productId" readonly="readonly">
+	   			<option value="${mov.productId}">${mov.productName}</option>
 			</select>
 			<br>
 			<br>
 			<label><b>Type</b></label>
 			<br>
-			<select id="type" name="type">
-				<option value="entry">Entry</option>
-				<option value="exit">Exit</option>
+			<select id="typeId" name="typeId" readonly="readonly">
+	   			<option value="${mov.typeId}">${mov.typeName}</option>
 			</select>
 			<br>
 			<br>
@@ -164,6 +163,4 @@
 	        return false;
 	    return true;
 	}
-	
-	document.getElementById("type").value = ${mov.type};
 </script>
