@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import model.Movement;
 
 public class MovementService {
-	private final String MOVEMENT = "MOVEMENT";
+	/*private final String MOVEMENT = "MOVEMENT";
 	
 	public void insertMovement(HttpServletRequest req) {
 		String productName = req.getParameter("productName");
@@ -119,5 +119,5 @@ ArrayList<Movement> movements = getSessionMovements(req);
 		movements.removeIf(m -> m.getId() == id);
 		
 		setMovementInSession(req, movements);
-	}
+	}*/
 }

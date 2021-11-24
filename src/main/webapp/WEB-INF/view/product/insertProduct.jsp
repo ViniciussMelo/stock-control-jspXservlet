@@ -66,7 +66,7 @@
 		<div class="container">
 			<h3>Product</h3>
 			<label><b>Barcode</b></label>
-	   		<input type="text" placeholder="Enter barcode" name="barcode" id="barcode" required>
+	   		<input type="number" onkeypress="return onlyNumberKey(event)" placeholder="Enter barcode" name="barcode" id="barcode" required>
 			<br>
 			<label><b>Name</b></label>
 	   		<input type="text" placeholder="Enter name" name="name" id="name" required>

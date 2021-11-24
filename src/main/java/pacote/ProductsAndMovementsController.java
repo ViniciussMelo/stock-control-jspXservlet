@@ -1,6 +1,7 @@
 package pacote;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -9,7 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.MovementService;
+import service.MovementServiceV2;
 import service.ProductService;
+import service.ProductServiceV2;
+import util.DBUtil;
 
 @WebServlet(name="productsAndMovementsController", urlPatterns = {"/ProductsAndMovementsController"})
 public class ProductsAndMovementsController  extends HttpServlet {
@@ -27,8 +31,10 @@ public class ProductsAndMovementsController  extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-			req.setAttribute("movements", movementService.getAllMovements(req));
-			req.setAttribute("products", productService.getAllProducts(req));
+        	Connection conn = DBUtil.getConnection();
+        	
+			req.setAttribute("movements", MovementServiceV2.getAllMovements(conn));
+			req.setAttribute("products", ProductServiceV2.getAllProducts(conn));
 			req.setAttribute("MOVPROD", " active");
 			
 

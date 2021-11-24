@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import model.Product;
 
 public class ProductService {
-	private final String PRODUCT = "PRODUCT";
+	/*private final String PRODUCT = "PRODUCT";
 	
 	public void insertProduct(HttpServletRequest req) {
 		String barcode = req.getParameter("barcode");
@@ -101,5 +101,5 @@ public class ProductService {
 		}
 		
 		return null;
-	}
+	}*/
 }

@@ -1,21 +1,21 @@
 package model;
 
 public class Product {
-	private String barcode;
+	private int barcode;
 	private String name;
 	private double price;
 	
-	public Product(String barcode, String name, double price) {
+	public Product(int barcode, String name, double price) {
 		this.barcode = barcode;
 		this.name = name;
 		this.price = price;
 	}
 	
-	public String getBarcode() {
+	public int getBarcode() {
 		return barcode;
 	}
 
-	public void setBarcode(String barcode) {
+	public void setBarcode(int barcode) {
 		this.barcode = barcode;
 	}
 

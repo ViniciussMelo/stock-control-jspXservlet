@@ -124,13 +124,13 @@
 			<h3>Movement</h3>
 			<label><b>Product</b></label>
 	   		<br>
-	   		<select name="productName">
+	   		<select name="productId">
 	   		<%
 	   			List<Product> products = (List) request.getAttribute("products");
 	   			if (products != null) {
 	   				for (Product prod : products) {
 	   		%>
-	   			<option value="<%=prod.getName()%>"><%=prod.getName()%></option>
+	   			<option value="<%=prod.getBarcode()%>"><%=prod.getName()%></option>
 	   		<%
 	   				}
 	   			}
